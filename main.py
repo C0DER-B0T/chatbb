@@ -10,15 +10,24 @@ from datetime import datetime
 # Load environment variables
 load_dotenv(override=True)
 
-# --- Firebase Initialization ---
+
 if not firebase_admin._apps:
-    key_path = os.getenv("FIREBASE_KEY_PATH")
-    if key_path and os.path.exists(key_path):
-        cred = credentials.Certificate(key_path)
-        firebase_admin.initialize_app(cred)
-    else:
-        st.error("🚨 Firebase key not found! Check your .env setup.")
-        st.stop()
+    
+    # 2. Convert the Streamlit secrets into a Python dictionary
+    firebase_credentials = dict(st.secrets["firebase"])
+    
+    # 3. Pass that dictionary to Firebase instead of a file path!
+    cred = credentials.Certificate(firebase_credentials)
+    firebase_admin.initialize_app(cred)
+# --- Firebase Initialization ---
+# if not firebase_admin._apps:
+#     key_path = os.getenv("FIREBASE_KEY_PATH")
+#     if key_path and os.path.exists(key_path):
+#         cred = credentials.Certificate(key_path)
+#         firebase_admin.initialize_app(cred)
+#     else:
+#         st.error("🚨 Firebase key not found! Check your .env setup.")
+#         st.stop()
 
 db = firestore.client()
 
