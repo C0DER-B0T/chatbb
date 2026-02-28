@@ -2,4 +2,4 @@ streamlit
 google-genai
 python-dotenv
 google-auth
-import firebase_admin
+firebase_admin
