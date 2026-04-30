@@ -150,11 +150,25 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # --- Gemini API Initialization ---
-# Support both 'gemini_api' and 'GEMINI_API_KEY' environment variables
-GEMINI_API_KEY = (os.getenv("GEMINI_API_KEY") or os.getenv("gemini_api") or "").strip().strip('"').strip("'")
+# Support Streamlit Secrets (Cloud) and Environment Variables (Local)
+def get_api_key():
+    # 1. Try Streamlit Secrets (Recommended for Cloud)
+    if "GEMINI_API_KEY" in st.secrets:
+        return st.secrets["GEMINI_API_KEY"]
+    if "gemini_api" in st.secrets:
+        return st.secrets["gemini_api"]
+    
+    # 2. Try Environment Variables (Local .env)
+    key = os.getenv("GEMINI_API_KEY") or os.getenv("gemini_api")
+    if key:
+        return key.strip().strip('"').strip("'")
+    
+    return None
+
+GEMINI_API_KEY = get_api_key()
 
 if not GEMINI_API_KEY:
-    st.error("🚨 API Key not found! Please ensure 'gemini_api' is set in your .env file.")
+    st.error("🚨 API Key not found! If you are on Streamlit Cloud, add 'GEMINI_API_KEY' to your App Secrets. Locally, check your .env file.")
     st.stop()
 
 if "client" not in st.session_state:
